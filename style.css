@@ -160,7 +160,33 @@ textarea:focus, input:focus {
   box-shadow: 0 0 0 3px rgba(120, 224, 209, 0.11);
 }
 
-#result-text { color: #dce8ff; background: rgba(7, 14, 30, 0.72); }
+.result-wrapper { position: relative; }
+
+#result-text {
+  padding-right: 49px;
+  color: #dce8ff;
+  background: rgba(7, 14, 30, 0.72);
+}
+
+.result-wrapper.is-masked #result-text {
+  color: transparent;
+  caret-color: transparent;
+  user-select: none;
+}
+
+.result-wrapper.is-masked #result-text::selection { background: transparent; }
+
+.result-mask {
+  position: absolute;
+  inset: 13px 48px 13px 14px;
+  overflow: hidden;
+  color: #b8c8e9;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  line-height: 1.52;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
 
 .field-hint { margin-top: 7px; color: var(--text-muted); font-size: 0.755rem; line-height: 1.45; }
 
@@ -189,6 +215,7 @@ textarea:focus, input:focus {
 .eye-closed { display: none; }
 .icon-button.is-visible .eye-open { display: none; }
 .icon-button.is-visible .eye-closed { display: block; }
+.result-toggle { top: 8px; transform: none; }
 
 .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 28px 0; }
 

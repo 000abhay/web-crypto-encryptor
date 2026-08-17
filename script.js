@@ -19,7 +19,10 @@ const elements = {
   toggleKey: document.querySelector("#toggle-key"),
   encryptButton: document.querySelector("#encrypt-button"),
   decryptButton: document.querySelector("#decrypt-button"),
+  resultWrapper: document.querySelector("#result-wrapper"),
   resultText: document.querySelector("#result-text"),
+  resultMask: document.querySelector("#result-mask"),
+  toggleResult: document.querySelector("#toggle-result"),
   resultType: document.querySelector("#result-type"),
   copyButton: document.querySelector("#copy-button"),
   clearButton: document.querySelector("#clear-button"),
@@ -139,8 +142,26 @@ function setStatus(message = "", state = "") {
 function setResult(value, type) {
   elements.resultText.value = value;
   elements.copyButton.disabled = !value;
+  elements.toggleResult.disabled = !value;
   elements.resultType.textContent = type;
   elements.resultType.hidden = !type;
+  updateResultMask(value);
+  setResultVisibility(false);
+}
+
+function updateResultMask(value) {
+  const visibleDots = Math.max(8, Math.min(Array.from(value).length, 72));
+  elements.resultMask.textContent = value ? "•".repeat(visibleDots) : "";
+}
+
+function setResultVisibility(isVisible) {
+  const hasResult = Boolean(elements.resultText.value);
+  const shouldShowMask = hasResult && !isVisible;
+  elements.resultWrapper.classList.toggle("is-masked", shouldShowMask);
+  elements.resultMask.hidden = !shouldShowMask;
+  elements.toggleResult.classList.toggle("is-visible", isVisible && hasResult);
+  elements.toggleResult.setAttribute("aria-label", isVisible ? "Hide result" : "Show result");
+  elements.toggleResult.setAttribute("aria-pressed", String(isVisible && hasResult));
 }
 
 function setBusy(isBusy, operation = "") {
@@ -249,6 +270,11 @@ elements.decryptButton.addEventListener("click", handleDecryption);
 elements.copyButton.addEventListener("click", copyResult);
 elements.clearButton.addEventListener("click", clearAll);
 elements.sourceText.addEventListener("input", updateCharacterCount);
+
+elements.toggleResult.addEventListener("click", () => {
+  const isHidden = elements.resultWrapper.classList.contains("is-masked");
+  setResultVisibility(isHidden);
+});
 
 elements.toggleKey.addEventListener("click", () => {
   const isHidden = elements.secretKey.type === "password";
