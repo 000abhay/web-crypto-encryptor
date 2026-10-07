@@ -8,6 +8,7 @@ const FORMAT_VERSION = 1;
 const PBKDF2_ITERATIONS = 600000;
 const SALT_LENGTH = 16;
 const IV_LENGTH = 12;
+const SHARE_LINK_BASE_URL = "https://000abhay.github.io/web-crypto-encryptor/";
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
@@ -254,10 +255,7 @@ async function copyResult() {
 }
 
 function createSecureLink(encryptedText) {
-  const url = new URL(window.location.href);
-  url.search = "";
-  url.hash = encryptedText;
-  return url.toString();
+  return `${SHARE_LINK_BASE_URL}#${encryptedText}`;
 }
 
 async function copySecureLink() {
