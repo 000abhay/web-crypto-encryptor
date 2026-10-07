@@ -11,6 +11,7 @@ const IV_LENGTH = 12;
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
+let currentResultIsEncrypted = false;
 
 const elements = {
   form: document.querySelector("#crypto-form"),
@@ -25,6 +26,7 @@ const elements = {
   toggleResult: document.querySelector("#toggle-result"),
   resultType: document.querySelector("#result-type"),
   copyButton: document.querySelector("#copy-button"),
+  copyLinkButton: document.querySelector("#copy-link-button"),
   clearButton: document.querySelector("#clear-button"),
   statusMessage: document.querySelector("#status-message"),
   inputCount: document.querySelector("#input-count"),
@@ -139,9 +141,11 @@ function setStatus(message = "", state = "") {
   elements.statusMessage.className = `status-message${state ? ` is-${state}` : ""}`;
 }
 
-function setResult(value, type) {
+function setResult(value, type, isEncrypted = false) {
+  currentResultIsEncrypted = Boolean(value) && isEncrypted;
   elements.resultText.value = value;
   elements.copyButton.disabled = !value;
+  elements.copyLinkButton.disabled = !currentResultIsEncrypted;
   elements.toggleResult.disabled = !value;
   elements.resultType.textContent = type;
   elements.resultType.hidden = !type;
@@ -168,6 +172,7 @@ function setBusy(isBusy, operation = "") {
   elements.encryptButton.disabled = isBusy;
   elements.decryptButton.disabled = isBusy;
   elements.copyButton.disabled = isBusy || !elements.resultText.value;
+  elements.copyLinkButton.disabled = isBusy || !currentResultIsEncrypted;
   elements.clearButton.disabled = isBusy;
   elements.encryptButton.querySelector("span").textContent = isBusy && operation === "encrypt" ? "Encrypting…" : "Encrypt";
   elements.decryptButton.querySelector("span").textContent = isBusy && operation === "decrypt" ? "Decrypting…" : "Decrypt";
@@ -202,8 +207,8 @@ async function handleEncryption() {
 
   try {
     const encryptedText = await encryptText(elements.sourceText.value, elements.secretKey.value);
-    setResult(encryptedText, "Encrypted text");
-    setStatus("Encryption successful. Copy the result and keep your secret key safe.", "success");
+    setResult(encryptedText, "Encrypted text", true);
+    setStatus("Encryption successful. Copy the encrypted result or create a secure link.", "success");
   } catch {
     setStatus("Unable to encrypt this text. Please try again.", "error");
   } finally {
@@ -248,6 +253,41 @@ async function copyResult() {
   setStatus("Result copied to your clipboard.", "success");
 }
 
+function createSecureLink(encryptedText) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  url.hash = encryptedText;
+  return url.toString();
+}
+
+async function copySecureLink() {
+  if (!currentResultIsEncrypted) return;
+
+  const secureLink = createSecureLink(elements.resultText.value);
+
+  try {
+    await navigator.clipboard.writeText(secureLink);
+    setStatus("Secure link copied. It contains encrypted text only; enter your secret key after opening it.", "success");
+  } catch {
+    setStatus("Could not copy the secure link automatically. Please try again in a current HTTPS browser.", "error");
+  }
+}
+
+function loadEncryptedTextFromLink() {
+  const encryptedText = window.location.hash.slice(1);
+  if (!encryptedText) return;
+
+  try {
+    decodeEncryptedPayload(encryptedText);
+    elements.sourceText.value = encryptedText;
+    updateCharacterCount();
+    setStatus("Encrypted text loaded from your secure link. Enter your secret key to decrypt it.", "success");
+    elements.secretKey.focus();
+  } catch {
+    setStatus("This link does not contain valid encrypted text.", "error");
+  }
+}
+
 function clearAll() {
   elements.form.reset();
   setResult("", "");
@@ -268,6 +308,7 @@ elements.form.addEventListener("submit", (event) => {
 
 elements.decryptButton.addEventListener("click", handleDecryption);
 elements.copyButton.addEventListener("click", copyResult);
+elements.copyLinkButton.addEventListener("click", copySecureLink);
 elements.clearButton.addEventListener("click", clearAll);
 elements.sourceText.addEventListener("input", updateCharacterCount);
 
@@ -285,3 +326,4 @@ elements.toggleKey.addEventListener("click", () => {
 });
 
 updateCharacterCount();
+loadEncryptedTextFromLink();

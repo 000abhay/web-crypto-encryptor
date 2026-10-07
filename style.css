@@ -247,7 +247,7 @@ textarea:focus, input:focus {
 
 .result-section { padding-top: 23px; padding-bottom: 18px; border-top: 1px solid var(--border); }
 
-.result-actions { display: flex; gap: 12px; margin-top: 13px; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 12px 19px; margin-top: 13px; }
 
 .text-button {
   display: inline-flex;
@@ -265,6 +265,8 @@ textarea:focus, input:focus {
 .text-button svg { width: 16px; height: 16px; }
 .text-button-muted { color: var(--text-muted); }
 .text-button-muted:hover:not(:disabled) { color: var(--danger); }
+
+.share-hint { margin-top: 8px; color: var(--text-muted); font-size: 0.72rem; line-height: 1.45; }
 
 .status-message {
   min-height: 21px;

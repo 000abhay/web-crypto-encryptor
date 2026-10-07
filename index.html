@@ -129,6 +129,13 @@
               </svg>
               Copy result
             </button>
+            <button id="copy-link-button" class="text-button" type="button" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M10.8 13.2a4 4 0 0 0 5.7.1l2.2-2.2a4 4 0 0 0-5.7-5.7l-1.3 1.3"></path>
+                <path d="M13.2 10.8a4 4 0 0 0-5.7-.1l-2.2 2.2a4 4 0 0 0 5.7 5.7l1.3-1.3"></path>
+              </svg>
+              Copy secure link
+            </button>
             <button id="clear-button" class="text-button text-button-muted" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13"></path>
@@ -136,6 +143,7 @@
               Clear all
             </button>
           </div>
+          <p class="share-hint">Secure links contain encrypted text only—never your secret key.</p>
         </section>
 
         <p id="status-message" class="status-message" role="status" aria-live="polite"></p>
